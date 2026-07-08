@@ -1,12 +1,23 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Flask App</title>
-</head>
-<body>
+  </head>
+  <body>
     <h1>Welcome to the Flask App</h1>
     <p>This is a simple Flask application.</p>
-</body>
+    {%if role == "user"%}
+    <button>Eliminar</button>
+    {%else%}
+    <button>Solicitar Eliminación</button>
+    {%endif%}
+
+    <ul>
+      {%for note in notes%}
+      <li>{{ note }}</li>
+      {%endfor%}
+    </ul>
+  </body>
 </html>

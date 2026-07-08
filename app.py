@@ -5,7 +5,9 @@ app = Flask(__name__)
 
 @app.route("/")
 def home():
-    return render_template("home.html")
+    role = "user"
+    notes = ["Nota 1", "Nota 2", "Nota 3"]
+    return render_template("home.html", role=role, notes=notes)
 
 
 @app.route("/about")
