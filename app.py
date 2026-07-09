@@ -1,37 +1,17 @@
-import os
-
 from flask import (
     Flask,
-    jsonify,
     redirect,
     render_template,
     request,
     url_for,
 )
-from flask_sqlalchemy import SQLAlchemy
 
-DB_FILE = os.path.join(os.path.dirname(__file__), "database.db")
+from models import Note, db
+
 app = Flask(__name__)
-app.config["SQLALCHEMY_DATABASE_URI"] = f"sqlite:///{DB_FILE}"
-app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+app.config.from_object("config.Config")
 
-
-db = SQLAlchemy(app)
-
-
-class Note(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(100), nullable=False)
-    content = db.Column(db.String(200), nullable=False)
-
-    def __repr__(self):
-        return f"<Note {self.id}: {self.title} - {self.content}>"
-
-
-@app.route("/")
-def home():
-    notes = Note.query.all()
-    return render_template("home.html", notes=notes)
+db.init_app(app)
 
 
 @app.route("/about")
@@ -46,18 +26,10 @@ def contact():
     return "Contact us at example@email.com"
 
 
-@app.route("/api/info")
-def api_info():
-    data = {
-        "name": "Flask App",
-        "version": "1.0",
-    }
-    return jsonify(data), 200
-
-
-@app.route("/confirmation")
-def confirmation():
-    return "Your action has been confirmed."
+@app.route("/")
+def home():
+    notes = Note.query.all()
+    return render_template("home.html", notes=notes)
 
 
 @app.route("/create_note", methods=["POST", "GET"])
@@ -75,3 +47,25 @@ def create_note():
             )
         )
     return render_template("note_form.html")
+
+
+@app.route("/edit_note/<int:note_id>", methods=["GET", "POST"])
+def edit_note(note_id):
+    note = Note.query.get_or_404(note_id)
+    if request.method == "POST":
+        note.title = request.form.get("title", note.title)
+        note.content = request.form.get("content", note.content)
+        db.session.commit()
+        return redirect(url_for("home"))
+    return render_template("edit_note.html", note=note)
+
+
+# añade una alerta que confirme que si quiero eliminar la nota
+
+
+@app.route("/delete_note/<int:note_id>", methods=["POST"])
+def delete_note(note_id):
+    note = Note.query.get_or_404(note_id)
+    db.session.delete(note)
+    db.session.commit()
+    return redirect(url_for("home"))
