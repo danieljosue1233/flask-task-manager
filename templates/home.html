@@ -8,16 +8,17 @@
   <body>
     <h1>Welcome to the Flask App</h1>
     <p>This is a simple Flask application.</p>
-    {%if role == "user"%}
-    <button>Eliminar</button>
-    {%else%}
-    <button>Solicitar Eliminación</button>
-    {%endif%}
-
     <ul>
-      {%for note in notes%}
-      <li>{{ note }}</li>
-      {%endfor%}
+      {% for note in notes %}
+      <li>
+        <strong>{{ note.title }}</strong><br />
+        {{ note.content }}
+      </li>
+      {% else %}
+      <li>No notes available.</li>
+      {% endfor %}
     </ul>
+    Create a new note:
+    <a href="{{ url_for('create_note') }}">Create Note</a>
   </body>
 </html>
