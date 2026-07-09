@@ -21,17 +21,17 @@ db = SQLAlchemy(app)
 
 class Note(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(100), nullable=False)
     content = db.Column(db.String(200), nullable=False)
 
     def __repr__(self):
-        return f"<Note {self.id}: {self.content}>"
+        return f"<Note {self.id}: {self.title} - {self.content}>"
 
 
 @app.route("/")
 def home():
-    role = "user"
     notes = Note.query.all()
-    return render_template("home.html", role=role, notes=notes)
+    return render_template("home.html", notes=notes)
 
 
 @app.route("/about")
@@ -63,10 +63,15 @@ def confirmation():
 @app.route("/create_note", methods=["POST", "GET"])
 def create_note():
     if request.method == "POST":
-        note_content = request.form.get("note", "No encontrada")
-        note = Note(content=note_content)
+        title = request.form.get("title", "")
+        content = request.form.get("content", "")
+        note = Note(title=title, content=content)
         db.session.add(note)
         db.session.commit()
 
-        return redirect(url_for("confirmation", note=note_content))
+        return redirect(
+            url_for(
+                "home",
+            )
+        )
     return render_template("note_form.html")
