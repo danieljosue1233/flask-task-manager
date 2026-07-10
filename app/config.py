@@ -1,6 +1,6 @@
 import os
 
-DB_FILE = os.path.join(os.path.dirname(__file__), "database.db")
+DB_FILE = os.path.join(os.path.dirname(os.path.dirname(__file__)), "database.db")
 
 
 class Config:

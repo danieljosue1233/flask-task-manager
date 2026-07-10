@@ -8,7 +8,7 @@ from flask import (
 )
 from werkzeug.security import check_password_hash, generate_password_hash
 
-from models import User, db
+from app.models import User, db
 
 users_bp = Blueprint("users", __name__)
 

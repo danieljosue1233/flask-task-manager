@@ -1,0 +1,32 @@
+# Archivos de entorno y configuración local
+.venv/
+env/
+venv/
+.env
+
+# Caché y archivos temporales de Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.nox/
+
+# Carpetas de control de versiones
+.git/
+.gitignore
+
+# Archivos de la base de datos local (solo para desarrollo)
+*.db
+*.sqlite3
+*.db-journal
+
+# Documentación o archivos de desarrollo innecesarios
+README.md
+docs/
+tests/
+.vscode/
+.idea/
