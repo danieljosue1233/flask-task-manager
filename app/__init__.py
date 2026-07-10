@@ -1,13 +1,19 @@
+from dotenv import load_dotenv
 from flask import Flask, render_template, request, session
 
 from app.models import Note, User, db
 from app.notes.routes import notes_bp
 from app.users.routes import users_bp
 
+from .config import Config
 
-def create_app():
+load_dotenv()
+
+
+def create_app(config_class=Config):
+
     app = Flask(__name__)
-    app.config.from_object("app.config.Config")
+    app.config.from_object(config_class)
     db.init_app(app)
 
     app.register_blueprint(notes_bp)
