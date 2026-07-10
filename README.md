@@ -5,7 +5,8 @@ Aplicacion web para gestionar tareas personales, desarrollada con Flask y Tailwi
 ## Captura de la aplicacion
 
 <!-- Agrega tu captura aqui -->
-![App Screenshot](docs/screenshot.png)
+<img width="1313" height="600" alt="image" src="https://github.com/user-attachments/assets/0770e4da-fe10-452c-885b-a65400d38675" />
+
 
 ## Funcionalidades
 
