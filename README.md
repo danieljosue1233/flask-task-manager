@@ -2,11 +2,14 @@
 
 Aplicacion web para gestionar tareas personales, desarrollada con Flask y Tailwind CSS 3.
 
+## Demo
+
+🌐 **Aplicacion desplegada:** https://flask-task-manager-40t5.onrender.com/
+
 ## Captura de la aplicacion
 
 <!-- Agrega tu captura aqui -->
 <img width="1313" height="600" alt="image" src="https://github.com/user-attachments/assets/9c77a890-00ee-44af-b2ef-de16bd0eaa4f" />
-
 
 ## Funcionalidades
 
@@ -72,7 +75,7 @@ La app estara disponible en `http://localhost:8000`
 
 ## Estructura del proyecto
 
-```
+```text
 flask-task-manager/
 ├── app/
 │   ├── __init__.py        # Factory create_app()
