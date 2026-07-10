@@ -1,5 +1,6 @@
 from dotenv import load_dotenv
 from flask import Flask, render_template, request, session
+from flask_migrate import Migrate
 
 from app.models import Note, User, db
 from app.notes.routes import notes_bp
@@ -9,12 +10,16 @@ from .config import Config
 
 load_dotenv()
 
+migrate = Migrate()
+
 
 def create_app(config_class=Config):
 
     app = Flask(__name__)
     app.config.from_object(config_class)
     db.init_app(app)
+
+    migrate.init_app(app, db)
 
     app.register_blueprint(notes_bp)
     app.register_blueprint(users_bp)
