@@ -19,7 +19,7 @@ block body %}
 </script>
 
 <div
-  class="bg-white rounded-2xl shadow-2xl p-10 w-full max-w-xl animate-[slideUp_0.5s_ease-out]"
+  class="bg-white rounded-2xl shadow-2xl p-10 w-full max-w-4xl animate-[slideUp_0.5s_ease-out]"
 >
   {% if user %}
   <div
@@ -40,6 +40,7 @@ block body %}
     Bienvenido, <span class="text-purple-600 font-bold">{{ user.name }}</span>!
     Gestiona tus notas.
   </p>
+
   {% with messages = get_flashed_messages(with_categories=true) %} {% if
   messages %} {% for category, message in messages %} {% if category ==
   'success' %}
@@ -56,41 +57,82 @@ block body %}
       <p>{{ message }}</p>
     </div>
     {% endfor %} {% endif %} {% endwith %} {% if notes %}
-    <ul class="flex flex-col gap-4 my-5">
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 my-6">
       {% for note in notes %}
-      <li
-        class="bg-gray-50 border-l-4 border-indigo-500 rounded-lg p-5 transition-all duration-300 hover:translate-x-1.5 hover:shadow-lg"
+      <div
+        class="bg-gradient-to-br from-gray-50 to-white border border-gray-100 rounded-2xl p-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-indigo-500/10 flex flex-col"
       >
-        <h3 class="text-gray-800 mb-2 text-xl font-semibold">
-          {{ note.title }}
-        </h3>
-        <p class="text-gray-500 mb-4 leading-relaxed">{{ note.content }}</p>
-        <div class="flex gap-3 items-center">
-          <a
-            href="{{ url_for('notes.edit_note', note_id=note.id) }}"
-            class="bg-gray-400 text-white px-5 py-2 rounded-lg font-semibold hover:bg-gray-500 transition-all duration-300"
-            >Editar</a
-          >
-          <form
-            id="notes-{{ note.id }}"
-            method="POST"
-            action="{{ url_for('notes.delete_note', note_id=note.id) }}"
-            class="inline"
-          >
-            <input
-              type="submit"
-              value="Eliminar"
-              class="bg-red-500 text-white px-5 py-2 rounded-lg font-semibold cursor-pointer hover:bg-red-600 hover:-translate-y-0.5 transition-all duration-300"
-              onclick="event.preventDefault(); checkConfirmation('{{ note.id }}');"
-            />
-          </form>
+        <div class="flex items-center gap-2 mb-3">
+          <span
+            class="w-2.5 h-2.5 bg-gradient-to-r from-indigo-400 to-purple-500 rounded-full"
+          ></span>
+          <h3 class="text-gray-800 text-lg font-bold truncate">
+            {{ note.title }}
+          </h3>
         </div>
-      </li>
+
+        <p
+          class="text-gray-500 text-sm leading-relaxed mb-4 flex-grow line-clamp-3"
+        >
+          {{ note.content }}
+        </p>
+
+        <div
+          class="flex items-center justify-between pt-3 border-t border-gray-100"
+        >
+          <span class="text-xs text-gray-400">
+            {{ note.created_at.strftime('%d %b %Y') if note.created_at else ''
+            }}
+          </span>
+          <div class="flex gap-2">
+            <a
+              href="{{ url_for('notes.edit_note', note_id=note.id) }}"
+              class="text-xs bg-gray-100 text-gray-600 px-3 py-1.5 rounded-lg font-medium hover:bg-indigo-100 hover:text-indigo-600 transition-all duration-200"
+              >Editar</a
+            >
+            <form
+              id="notes-{{ note.id }}"
+              method="POST"
+              action="{{ url_for('notes.delete_note', note_id=note.id) }}"
+              class="inline"
+            >
+              <input
+                type="submit"
+                value="Eliminar"
+                class="text-xs bg-gray-100 text-gray-600 px-3 py-1.5 rounded-lg font-medium cursor-pointer hover:bg-red-100 hover:text-red-600 transition-all duration-200"
+                onclick="event.preventDefault(); checkConfirmation('{{ note.id }}');"
+              />
+            </form>
+          </div>
+        </div>
+      </div>
       {% endfor %}
-    </ul>
+
+      <a
+        href="{{ url_for('notes.create_note') }}"
+        class="border-2 border-dashed border-indigo-200 rounded-2xl p-6 flex flex-col items-center justify-center gap-3 text-indigo-400 hover:border-indigo-400 hover:text-indigo-600 hover:bg-indigo-50/50 transition-all duration-300 min-h-[180px]"
+      >
+        <svg
+          class="w-10 h-10"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+          />
+        </svg>
+        <span class="font-semibold text-sm">Crear Nota</span>
+      </a>
+    </div>
+
     {% else %}
     <div
-      class="flex flex-col items-center justify-center py-12 my-5 bg-gray-50 rounded-lg animate-[fadeIn_0.8s_ease-out]"
+      class="flex flex-col items-center justify-center py-12 my-5 bg-gray-50 rounded-2xl animate-[fadeIn_0.8s_ease-out]"
     >
       <svg
         class="w-20 h-20 text-indigo-300 mb-6 animate-bounce"
@@ -109,14 +151,6 @@ block body %}
       <p class="text-gray-300 text-sm mb-6">
         Crea tu primera nota para empezar
       </p>
-      <a
-        href="{{ url_for('notes.create_note') }}"
-        class="bg-gradient-to-r from-indigo-500 to-purple-600 text-white px-6 py-2.5 rounded-lg font-semibold hover:-translate-y-0.5 hover:shadow-lg hover:shadow-indigo-500/40 transition-all duration-300 inline-block"
-        >Crear Nota</a
-      >
-    </div>
-    {% endif %} {% if notes %}
-    <div class="text-center mt-6 pt-5 border-t-2 border-gray-100">
       <a
         href="{{ url_for('notes.create_note') }}"
         class="bg-gradient-to-r from-indigo-500 to-purple-600 text-white px-6 py-2.5 rounded-lg font-semibold hover:-translate-y-0.5 hover:shadow-lg hover:shadow-indigo-500/40 transition-all duration-300 inline-block"
