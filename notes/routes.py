@@ -1,4 +1,4 @@
-from flask import Blueprint, redirect, render_template, request, url_for
+from flask import Blueprint, redirect, render_template, request, session, url_for
 
 from models import Note, db
 
@@ -7,10 +7,12 @@ notes_bp = Blueprint("notes", __name__)
 
 @notes_bp.route("/create_note", methods=["POST", "GET"])
 def create_note():
+    if "user_id" not in session:
+        return redirect(url_for("users.login"))
     if request.method == "POST":
         title = request.form.get("title", "")
         content = request.form.get("content", "")
-        note = Note(title=title, content=content)
+        note = Note(title=title, content=content, user_id=session["user_id"])
         db.session.add(note)
         db.session.commit()
 
@@ -24,6 +26,8 @@ def create_note():
 
 @notes_bp.route("/edit_note/<int:note_id>", methods=["GET", "POST"])
 def edit_note(note_id):
+    if "user_id" not in session:
+        return redirect(url_for("users.login"))
     note = Note.query.get_or_404(note_id)
     if request.method == "POST":
         note.title = request.form.get("title", note.title)
@@ -38,6 +42,8 @@ def edit_note(note_id):
 
 @notes_bp.route("/delete_note/<int:note_id>", methods=["POST"])
 def delete_note(note_id):
+    if "user_id" not in session:
+        return redirect(url_for("users.login"))
     note = Note.query.get_or_404(note_id)
     db.session.delete(note)
     db.session.commit()

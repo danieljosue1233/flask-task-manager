@@ -2,15 +2,18 @@ from flask import (
     Flask,
     render_template,
     request,
+    session,
 )
 
-from models import Note, db
+from models import Note, User, db
 from notes.routes import notes_bp
+from users.routes import users_bp
 
 app = Flask(__name__)
 app.config.from_object("config.Config")
 db.init_app(app)
 app.register_blueprint(notes_bp)
+app.register_blueprint(users_bp)
 
 
 @app.route("/about")
@@ -27,5 +30,9 @@ def contact():
 
 @app.route("/")
 def home():
-    notes = Note.query.all()
-    return render_template("home.html", notes=notes)
+    user = None
+    notes = []
+    if "user_id" in session:
+        user = User.query.get(session["user_id"])
+        notes = Note.query.filter_by(user_id=session["user_id"]).all()
+    return render_template("home.html", notes=notes, user=user)
