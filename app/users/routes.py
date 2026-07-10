@@ -1,13 +1,7 @@
-from flask import (
-    Blueprint,
-    redirect,
-    render_template,
-    request,
-    session,
-    url_for,
-)
+from flask import Blueprint, redirect, render_template, session, url_for
 from werkzeug.security import check_password_hash, generate_password_hash
 
+from app.forms import LoginForm, RegisterForm
 from app.models import User, db
 
 users_bp = Blueprint("users", __name__)
@@ -15,42 +9,35 @@ users_bp = Blueprint("users", __name__)
 
 @users_bp.route("/register", methods=["GET", "POST"])
 def register():
-    if request.method == "POST":
-        name = request.form.get("name", "")
-        email = request.form.get("email", "")
-        password = request.form.get("password", "")
-
-        existing_user = User.query.filter_by(email=email).first()
-        if existing_user:
-            return render_template(
-                "register.html", error="El correo ya esta registrado"
-            )
-
-        hashed_password = generate_password_hash(password)
-        user = User(name=name, email=email, password=hashed_password)
+    form = RegisterForm()
+    if form.validate_on_submit():
+        hashed_password = generate_password_hash(form.password.data)
+        user = User(
+            name=form.name.data, email=form.email.data, password=hashed_password
+        )
         db.session.add(user)
         db.session.commit()
 
         session["user_id"] = user.id
         return redirect(url_for("home"))
 
-    return render_template("register.html")
+    return render_template("register.html", form=form)
 
 
 @users_bp.route("/login", methods=["GET", "POST"])
 def login():
-    if request.method == "POST":
-        email = request.form.get("email", "")
-        password = request.form.get("password", "")
-
-        user = User.query.filter_by(email=email).first()
-        if user and check_password_hash(user.password, password):
+    form = LoginForm()
+    if form.validate_on_submit():
+        user = User.query.filter_by(email=form.email.data).first()
+        if user and check_password_hash(user.password, form.password.data):
             session["user_id"] = user.id
             return redirect(url_for("home"))
 
-        return render_template("login.html", error="Correo o contrasena incorrectos")
+        return render_template(
+            "login.html", form=form, error="Correo o contrasena incorrectos"
+        )
 
-    return render_template("login.html")
+    return render_template("login.html", form=form)
 
 
 @users_bp.route("/logout")
