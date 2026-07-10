@@ -8,6 +8,16 @@ block body %}
   }
 </script>
 
+<script>
+  setTimeout(() => {
+    document.querySelectorAll(".flash-message").forEach((el) => {
+      el.style.transition = "opacity 0.5s ease-out";
+      el.style.opacity = "0";
+      setTimeout(() => el.remove(), 500);
+    });
+  }, 3000);
+</script>
+
 <div
   class="bg-white rounded-2xl shadow-2xl p-10 w-full max-w-xl animate-[slideUp_0.5s_ease-out]"
 >
@@ -30,217 +40,198 @@ block body %}
     Bienvenido, <span class="text-purple-600 font-bold">{{ user.name }}</span>!
     Gestiona tus notas.
   </p>
-
-  {% if notes %}
-  <ul class="flex flex-col gap-4 my-5">
-    {% for note in notes %}
-    <li
-      class="bg-gray-50 border-l-4 border-indigo-500 rounded-lg p-5 transition-all duration-300 hover:translate-x-1.5 hover:shadow-lg"
-    >
-      <h3 class="text-gray-800 mb-2 text-xl font-semibold">{{ note.title }}</h3>
-      <p class="text-gray-500 mb-4 leading-relaxed">{{ note.content }}</p>
-      <div class="flex gap-3 items-center">
-        <a
-          href="{{ url_for('notes.edit_note', note_id=note.id) }}"
-          class="bg-gray-400 text-white px-5 py-2 rounded-lg font-semibold hover:bg-gray-500 transition-all duration-300"
-          >Editar</a
-        >
-        <form
-          id="notes-{{ note.id }}"
-          method="POST"
-          action="{{ url_for('notes.delete_note', note_id=note.id) }}"
-          class="inline"
-        >
-          <input
-            type="submit"
-            value="Eliminar"
-            class="bg-red-500 text-white px-5 py-2 rounded-lg font-semibold cursor-pointer hover:bg-red-600 hover:-translate-y-0.5 transition-all duration-300"
-            onclick="event.preventDefault(); checkConfirmation('{{ note.id }}');"
-          />
-        </form>
-      </div>
-    </li>
-    {% endfor %}
-  </ul>
-  {% else %}
+  {% with messages = get_flashed_messages(with_categories=true) %} {% if
+  messages %} {% for category, message in messages %} {% if category ==
+  'success' %}
   <div
-    class="flex flex-col items-center justify-center py-12 my-5 bg-gray-50 rounded-lg animate-[fadeIn_0.8s_ease-out]"
+    class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-4 rounded-lg flash-message"
+    role="alert"
   >
-    <svg
-      class="w-20 h-20 text-indigo-300 mb-6 animate-bounce"
-      fill="none"
-      stroke="currentColor"
-      viewBox="0 0 24 24"
+    {% else %}
+    <div
+      class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4 rounded-lg flash-message"
+      role="alert"
     >
-      <path
-        stroke-linecap="round"
-        stroke-linejoin="round"
-        stroke-width="1.5"
-        d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-      />
-    </svg>
-    <p class="text-gray-400 text-lg font-medium mb-2">No tienes notas aun</p>
-    <p class="text-gray-300 text-sm mb-6">Crea tu primera nota para empezar</p>
-    <a
-      href="{{ url_for('notes.create_note') }}"
-      class="bg-gradient-to-r from-indigo-500 to-purple-600 text-white px-6 py-2.5 rounded-lg font-semibold hover:-translate-y-0.5 hover:shadow-lg hover:shadow-indigo-500/40 transition-all duration-300 inline-block"
-      >Crear Nota</a
-    >
-  </div>
-  {% endif %} {% if notes %}
-  <div class="text-center mt-6 pt-5 border-t-2 border-gray-100">
-    <a
-      href="{{ url_for('notes.create_note') }}"
-      class="bg-gradient-to-r from-indigo-500 to-purple-600 text-white px-6 py-2.5 rounded-lg font-semibold hover:-translate-y-0.5 hover:shadow-lg hover:shadow-indigo-500/40 transition-all duration-300 inline-block"
-      >Crear Nota</a
-    >
-  </div>
-  {% endif %} {% else %}
-  <div class="flex flex-col items-center py-6 mb-6">
-    <h1
-      class="text-center text-indigo-500 mb-3 text-4xl font-bold animate-[fadeInDown_0.6s_ease-out]"
-    >
-      Task Manager
-    </h1>
-    <p class="text-center text-gray-500 text-lg animate-[fadeIn_0.8s_ease-out]">
-      Organiza tus tareas de forma sencilla
-    </p>
-  </div>
-
-  <div
-    class="flex flex-col items-center justify-center py-10 my-5 animate-[fadeIn_1s_ease-out]"
-  >
-    <div class="flex gap-4 mb-8">
-      <div
-        class="w-14 h-14 bg-indigo-100 rounded-xl flex items-center justify-center animate-[bounce_2s_infinite]"
+      {% endif %}
+      <p>{{ message }}</p>
+    </div>
+    {% endfor %} {% endif %} {% endwith %} {% if notes %}
+    <ul class="flex flex-col gap-4 my-5">
+      {% for note in notes %}
+      <li
+        class="bg-gray-50 border-l-4 border-indigo-500 rounded-lg p-5 transition-all duration-300 hover:translate-x-1.5 hover:shadow-lg"
       >
-        <svg
-          class="w-7 h-7 text-indigo-500"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
-          />
-        </svg>
-      </div>
-      <div
-        class="w-14 h-14 bg-purple-100 rounded-xl flex items-center justify-center animate-[bounce_2s_infinite_0.3s]"
+        <h3 class="text-gray-800 mb-2 text-xl font-semibold">
+          {{ note.title }}
+        </h3>
+        <p class="text-gray-500 mb-4 leading-relaxed">{{ note.content }}</p>
+        <div class="flex gap-3 items-center">
+          <a
+            href="{{ url_for('notes.edit_note', note_id=note.id) }}"
+            class="bg-gray-400 text-white px-5 py-2 rounded-lg font-semibold hover:bg-gray-500 transition-all duration-300"
+            >Editar</a
+          >
+          <form
+            id="notes-{{ note.id }}"
+            method="POST"
+            action="{{ url_for('notes.delete_note', note_id=note.id) }}"
+            class="inline"
+          >
+            <input
+              type="submit"
+              value="Eliminar"
+              class="bg-red-500 text-white px-5 py-2 rounded-lg font-semibold cursor-pointer hover:bg-red-600 hover:-translate-y-0.5 transition-all duration-300"
+              onclick="event.preventDefault(); checkConfirmation('{{ note.id }}');"
+            />
+          </form>
+        </div>
+      </li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <div
+      class="flex flex-col items-center justify-center py-12 my-5 bg-gray-50 rounded-lg animate-[fadeIn_0.8s_ease-out]"
+    >
+      <svg
+        class="w-20 h-20 text-indigo-300 mb-6 animate-bounce"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
       >
-        <svg
-          class="w-7 h-7 text-purple-500"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-          />
-        </svg>
-      </div>
-      <div
-        class="w-14 h-14 bg-green-100 rounded-xl flex items-center justify-center animate-[bounce_2s_infinite_0.6s]"
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="1.5"
+          d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+        />
+      </svg>
+      <p class="text-gray-400 text-lg font-medium mb-2">No tienes notas aun</p>
+      <p class="text-gray-300 text-sm mb-6">
+        Crea tu primera nota para empezar
+      </p>
+      <a
+        href="{{ url_for('notes.create_note') }}"
+        class="bg-gradient-to-r from-indigo-500 to-purple-600 text-white px-6 py-2.5 rounded-lg font-semibold hover:-translate-y-0.5 hover:shadow-lg hover:shadow-indigo-500/40 transition-all duration-300 inline-block"
+        >Crear Nota</a
       >
-        <svg
-          class="w-7 h-7 text-green-500"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M5 13l4 4L19 7"
-          />
-        </svg>
-      </div>
+    </div>
+    {% endif %} {% if notes %}
+    <div class="text-center mt-6 pt-5 border-t-2 border-gray-100">
+      <a
+        href="{{ url_for('notes.create_note') }}"
+        class="bg-gradient-to-r from-indigo-500 to-purple-600 text-white px-6 py-2.5 rounded-lg font-semibold hover:-translate-y-0.5 hover:shadow-lg hover:shadow-indigo-500/40 transition-all duration-300 inline-block"
+        >Crear Nota</a
+      >
+    </div>
+    {% endif %} {% else %}
+    <div class="flex flex-col items-center py-6 mb-6">
+      <h1
+        class="text-center text-indigo-500 mb-3 text-4xl font-bold animate-[fadeInDown_0.6s_ease-out]"
+      >
+        Task Manager
+      </h1>
+      <p
+        class="text-center text-gray-500 text-lg animate-[fadeIn_0.8s_ease-out]"
+      >
+        Organiza tus tareas de forma sencilla
+      </p>
     </div>
 
-    <ul class="flex flex-col gap-3 w-full max-w-xs mb-8">
-      <li
-        class="flex items-center gap-3 text-gray-400 animate-[slideRight_0.5s_ease-out_0.2s_both]"
+    <div
+      class="flex flex-col items-center justify-center py-10 my-5 animate-[fadeIn_1s_ease-out]"
+    >
+      <div class="flex gap-4 mb-8">
+        <div
+          class="w-14 h-14 bg-indigo-100 rounded-xl flex items-center justify-center animate-[bounce_2s_infinite]"
+        >
+          <svg
+            class="w-7 h-7 text-indigo-500"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
+            />
+          </svg>
+        </div>
+        <div
+          class="w-14 h-14 bg-purple-100 rounded-xl flex items-center justify-center animate-[bounce_2s_infinite_0.3s]"
+        >
+          <svg
+            class="w-7 h-7 text-purple-500"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+            />
+          </svg>
+        </div>
+        <div
+          class="w-14 h-14 bg-green-100 rounded-xl flex items-center justify-center animate-[bounce_2s_infinite_0.6s]"
+        >
+          <svg
+            class="w-7 h-7 text-green-500"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M5 13l4 4L19 7"
+            />
+          </svg>
+        </div>
+      </div>
+
+      <ul class="flex flex-col gap-3 w-full max-w-xs mb-8">
+        <li
+          class="flex items-center gap-3 text-gray-400 animate-[slideRight_0.5s_ease-out_0.2s_both]"
+        >
+          <span class="w-2 h-2 bg-indigo-400 rounded-full"></span> Crea y
+          organiza tus notas
+        </li>
+        <li
+          class="flex items-center gap-3 text-gray-400 animate-[slideRight_0.5s_ease-out_0.4s_both]"
+        >
+          <span class="w-2 h-2 bg-purple-400 rounded-full"></span> Editalas
+          cuando quieras
+        </li>
+        <li
+          class="flex items-center gap-3 text-gray-400 animate-[slideRight_0.5s_ease-out_0.6s_both]"
+        >
+          <span class="w-2 h-2 bg-green-400 rounded-full"></span> Elimina las
+          que ya no necesites
+        </li>
+      </ul>
+    </div>
+
+    <div
+      class="text-center mt-6 pt-5 border-t-2 border-gray-100 animate-[fadeIn_1.2s_ease-out]"
+    >
+      <a
+        href="{{ url_for('users.login') }}"
+        class="bg-gradient-to-r from-indigo-500 to-purple-600 text-white px-6 py-2.5 rounded-lg font-semibold hover:-translate-y-0.5 hover:shadow-lg hover:shadow-indigo-500/40 transition-all duration-300 inline-block mx-2"
+        >Iniciar Sesion</a
       >
-        <span class="w-2 h-2 bg-indigo-400 rounded-full"></span> Crea y organiza
-        tus notas
-      </li>
-      <li
-        class="flex items-center gap-3 text-gray-400 animate-[slideRight_0.5s_ease-out_0.4s_both]"
+      <a
+        href="{{ url_for('users.register') }}"
+        class="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-6 py-2.5 rounded-lg font-semibold hover:-translate-y-0.5 hover:shadow-lg hover:shadow-purple-500/40 transition-all duration-300 inline-block mx-2"
+        >Registrarse</a
       >
-        <span class="w-2 h-2 bg-purple-400 rounded-full"></span> Editalas cuando
-        quieras
-      </li>
-      <li
-        class="flex items-center gap-3 text-gray-400 animate-[slideRight_0.5s_ease-out_0.6s_both]"
-      >
-        <span class="w-2 h-2 bg-green-400 rounded-full"></span> Elimina las que
-        ya no necesites
-      </li>
-    </ul>
+    </div>
+    {% endif %}
   </div>
 
-  <div
-    class="text-center mt-6 pt-5 border-t-2 border-gray-100 animate-[fadeIn_1.2s_ease-out]"
-  >
-    <a
-      href="{{ url_for('users.login') }}"
-      class="bg-gradient-to-r from-indigo-500 to-purple-600 text-white px-6 py-2.5 rounded-lg font-semibold hover:-translate-y-0.5 hover:shadow-lg hover:shadow-indigo-500/40 transition-all duration-300 inline-block mx-2"
-      >Iniciar Sesion</a
-    >
-    <a
-      href="{{ url_for('users.register') }}"
-      class="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-6 py-2.5 rounded-lg font-semibold hover:-translate-y-0.5 hover:shadow-lg hover:shadow-purple-500/40 transition-all duration-300 inline-block mx-2"
-      >Registrarse</a
-    >
-  </div>
-  {% endif %}
+  {% endblock %}
 </div>
-
-<style>
-  @keyframes slideUp {
-    from {
-      opacity: 0;
-      transform: translateY(30px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-  @keyframes fadeIn {
-    from {
-      opacity: 0;
-    }
-    to {
-      opacity: 1;
-    }
-  }
-  @keyframes fadeInDown {
-    from {
-      opacity: 0;
-      transform: translateY(-20px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-  @keyframes slideRight {
-    from {
-      opacity: 0;
-      transform: translateX(-20px);
-    }
-    to {
-      opacity: 1;
-      transform: translateX(0);
-    }
-  }
-</style>
-{% endblock %}
