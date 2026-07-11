@@ -4,9 +4,10 @@ basedir = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
 
 
 class Config:
-    SQLALCHEMY_DATABASE_URI = os.getenv(
-        "DATABASE_URL", f"sqlite:///{os.path.join(basedir, 'database.db')}"
-    )
+    uri = os.getenv("DATABASE_URL", f"sqlite:///{os.path.join(basedir, 'database.db')}")
+    if uri.startswith("postgres://"):
+        uri = uri.replace("postgres://", "postgresql://", 1)
+    SQLALCHEMY_DATABASE_URI = uri
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SECRET_KEY = os.getenv("SECRET_KEY", "clave-segura-por-defecto")
 

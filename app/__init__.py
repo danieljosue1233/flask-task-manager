@@ -24,6 +24,9 @@ def create_app(config_class=Config):
     app.register_blueprint(notes_bp)
     app.register_blueprint(users_bp)
 
+    with app.app_context():
+        db.create_all()
+
     @app.route("/about")
     def about():
         return "This is a simple Flask application."
